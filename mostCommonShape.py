@@ -11,11 +11,12 @@ If an output file is provided, the full set of non-trivial shapes will be writte
 WORD_LIST_FILE should be a text file with a separate word on each line.
 
 result (for Qwerty):
-    The most common shape had 4 occurences:
+    The most common shape of at least 4 letters had 4 occurences:
     ['dede', 'juju', 'kiki', 'lolo']
+    ['eyey', 'yoyo', 'ruru', 'titi']
 
 result (for Dvorak):
-    The most common shape had 6 occurences:
+    The most common shape of at least 4 letters had 6 occurences:
     ['dada', 'hoho', 'lyly', 'nunu', 'sisi', 'tete']
 
 '''
