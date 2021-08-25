@@ -26,6 +26,8 @@ ROWS = ["QWERTYUIOP","ASDFGHJKL","ZXCVBNM"]
 #Dvorak
 # ROWS = ["   PYFGCRL", "AOEUIDHTNS", " QJKXBMWVZ"]
 
+MINIMUM_WORD_LENGTH = 4
+
 # Returns x, y (place in row, row number)
 def get_letter_location(c):
     c = c.upper()
@@ -38,6 +40,8 @@ def get_letter_location(c):
 
 # Difference in (x,y) from previous key)
 def get_path(word):
+    if len(word) < MINIMUM_WORD_LENGTH:
+        return None
     locations = list(map(get_letter_location, word))
     if None in locations:
         return None
@@ -59,6 +63,8 @@ def find_matches(target, words):
 def get_duplicate_count(arr):
     counts = {}
     for raw_item in arr:
+        if raw_item is None:
+            continue
         item = str(raw_item)
         if item in counts:
             counts[item] +=1
@@ -70,7 +76,7 @@ def get_duplicate_count(arr):
 def filter_out_trivials(counts):
     to_pop = []
     for key, value in counts.items():
-        if value is None or value < 3 or len(key) < 34 : # ~word length less than 4
+        if value is None or value < 3:
             to_pop.append(key)
     for key in to_pop:
         counts.pop(key)
@@ -110,6 +116,9 @@ if __name__ == "__main__":
         write_count_to_file(out_file, counts)
 
     highest = max(counts, key=counts.get)
-    matches = find_matches(parse_path(highest), words)
-    print("The most common shape had %s occurences:"%(len(matches)))
-    print(matches)
+    print("The most common shape had %s occurences:"%(counts[highest]))
+    
+    for key, value in counts.items():
+        if value == counts[highest]:
+            matches = find_matches(parse_path(key), words)
+            print(matches)
