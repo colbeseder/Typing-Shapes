@@ -8,6 +8,8 @@ Run command:
 
 If an output file is provided, the full set of non-trivial shapes will be written there, including the number of occurences of each.
 
+WORD_LIST_FILE should be a text file with a separate word on each line.
+
 result (for Qwerty):
     The most common shape had 4 occurences:
     ['dede', 'juju', 'kiki', 'lolo']
@@ -116,7 +118,7 @@ if __name__ == "__main__":
         write_count_to_file(out_file, counts)
 
     highest = max(counts, key=counts.get)
-    print("The most common shape had %s occurences:"%(counts[highest]))
+    print("The most common shape of at least %s letters had %s occurences:"%(MINIMUM_WORD_LENGTH, counts[highest]))
     
     for key, value in counts.items():
         if value == counts[highest]:
