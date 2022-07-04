@@ -23,13 +23,15 @@ result (for Dvorak):
 
 import sys
 
-#Qwerty
-ROWS = ["QWERTYUIOP","ASDFGHJKL","ZXCVBNM"]
+KEYBOARD = "qwerty"
+MINIMUM_WORD_LENGTH = 6
 
-#Dvorak
-# ROWS = ["   PYFGCRL", "AOEUIDHTNS", " QJKXBMWVZ"]
+keyboards = {
+    "qwerty": ["QWERTYUIOP","ASDFGHJKL","ZXCVBNM"],
+    "dvorak": ["   PYFGCRL", "AOEUIDHTNS", " QJKXBMWVZ"]
+}
 
-MINIMUM_WORD_LENGTH = 4
+ROWS = keyboards[KEYBOARD]
 
 # Returns x, y (place in row, row number)
 def get_letter_location(c):
@@ -79,7 +81,7 @@ def get_duplicate_count(arr):
 def filter_out_trivials(counts):
     to_pop = []
     for key, value in counts.items():
-        if value is None or value < 3:
+        if value is None or value < 2:
             to_pop.append(key)
     for key in to_pop:
         counts.pop(key)
@@ -95,6 +97,28 @@ def parse_path(s):
         i += 2
     return path
 
+def find_duplicate_paths(words, keyboard):
+    paths = map(get_path, words)
+    counts = get_duplicate_count(paths)
+    return counts
+
+def print_detailed_results(words, keyboard, min_length):
+    counts = find_duplicate_paths(words, keyboard)
+    
+    highest = max(counts, key=counts.get)
+    
+    print("The most common shape of at least %s letters on a %s keyboard has %s occurences:"%(MINIMUM_WORD_LENGTH, KEYBOARD, counts[highest]))
+    for key, value in counts.items():
+        if value == counts[highest]:
+            matches = find_matches(parse_path(key), words)
+            print("%s (%s letters)" %(matches, len(matches[0])))
+
+def get_words(words_file):
+    with open(words_file) as file:
+        lines = file.readlines()
+    return set([line.rstrip().lower() for line in lines])
+
+
 def write_count_to_file(filename, counts):
     with open(filename, 'w') as f:
         for key, value in counts.items():
@@ -105,23 +129,11 @@ def write_count_to_file(filename, counts):
 if __name__ == "__main__":
     # parse args
     words_file = sys.argv[1]
-    out_file = None
+
     if len(sys.argv) > 2:
-        out_file = sys.argv[2]
+        MINIMUM_WORD_LENGTH = int(sys.argv[3])
+    if len(sys.argv) > 3:
+        KEYBOARD = sys.argv[4]
 
-    with open(words_file) as file:
-        lines = file.readlines()
-    words = [line.rstrip() for line in lines]
-    paths = map(get_path, words)
-    counts = get_duplicate_count(paths)
-
-    if out_file is not None:
-        write_count_to_file(out_file, counts)
-
-    highest = max(counts, key=counts.get)
-    print("The most common shape of at least %s letters had %s occurences:"%(MINIMUM_WORD_LENGTH, counts[highest]))
-    
-    for key, value in counts.items():
-        if value == counts[highest]:
-            matches = find_matches(parse_path(key), words)
-            print(matches)
+    words = get_words(words_file)
+    print_detailed_results(words, KEYBOARD, MINIMUM_WORD_LENGTH)
